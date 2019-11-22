@@ -119,19 +119,19 @@ void CgalProcessor::saveContourShp(std::vector<double> isoDepths, const char * f
     contourSegmentVec contours = extractContours(isoDepths);
     
     const char *pszDriverName = "ESRI Shapefile";
-    OGRSFDriver *poDriver;
+    GDALDriver *poDriver;
     
-    OGRRegisterAll();
+    GDALAllRegister();
     
-    poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName( pszDriverName );
+    poDriver = GetGDALDriverManager()->GetDriverByName( pszDriverName );
     if( poDriver == NULL ) {
         printf( "%s driver not available.\n", pszDriverName );
         exit( 1 );
     }
     
-    OGRDataSource *poDS;
+    GDALDataset *poDS;
     
-    poDS = poDriver->CreateDataSource( fileOut, NULL );
+    poDS = poDriver->Create( fileOut, 0, 0, 0, GDT_Unknown, NULL );
     if( poDS == NULL ) {
         printf( "Creation of output file failed.\n" );
         exit( 1 );
@@ -157,8 +157,8 @@ void CgalProcessor::saveContourShp(std::vector<double> isoDepths, const char * f
     for (contourSegmentVec::iterator it = contours.begin(); it != contours.end(); ++it) {
 
         geos::operation::linemerge::LineMerger merger;
-        geos::geom::PrecisionModel precisionModel(10000);
-        geos::geom::GeometryFactory geomFactory(&precisionModel);
+        const geos::geom::PrecisionModel precisionModel(10000);
+        auto geomFactory = geos::geom::GeometryFactory::create(&precisionModel);
         
         // Convert CGAL segments to GEOS geometry and add them to the linemerger
         for (std::vector<CGAL::Segment_3<K> >::iterator sit = it->second.begin(); sit != it->second.end(); ++sit) {
@@ -173,7 +173,7 @@ void CgalProcessor::saveContourShp(std::vector<double> isoDepths, const char * f
             
             pseq->add(source);
             pseq->add(target);
-            const geos::geom::Geometry* geos_segment = geomFactory.createLineString(pseq);
+            const geos::geom::Geometry* geos_segment = geomFactory->createLineString(pseq);
             
             merger.add(geos_segment);
         }
@@ -245,7 +245,7 @@ void CgalProcessor::saveContourShp(std::vector<double> isoDepths, const char * f
 
     }
         
-    OGRDataSource::DestroyDataSource( poDS );    
+    GDALClose( poDS );
 }
 
 // Evaluates whether a vertex is position under, above or on (within range +/- e) the (contour) depth.
@@ -577,7 +577,7 @@ double CgalProcessor::estimateZ_LIN(Vertex_handle v) throw(OutsideConvexHullExce
 // estimate the depth on (x,y) position of vertex v after removal of that vertex, using Natural Neighbour interpolation.
 double CgalProcessor::estimateZ_NN(Vertex_handle v) throw(OutsideConvexHullException)
 {
-    typedef std::vector< std::pair< Dt::Vertex_handle, Dt::Geom_traits::FT > > Point_coordinate_vector;
+    typedef std::vector< std::pair< Dt::Point, Dt::Geom_traits::FT > > Point_coordinate_vector;
     
     Dt t2;
     Dt::Vertex_circulator vc = dt.incident_vertices(v),
@@ -594,13 +594,13 @@ double CgalProcessor::estimateZ_NN(Vertex_handle v) throw(OutsideConvexHullExcep
     CGAL::Triple<
     std::back_insert_iterator<Point_coordinate_vector>,
     K::FT, bool> result =
-        CGAL::natural_neighbor_coordinates_vertex_2(t2, v->point(), std::back_inserter(coords));
+        CGAL::natural_neighbor_coordinates_2(t2, v->point(), std::back_inserter(coords));
     
     double newZ = 0;
 
     if(result.third)
         for(Point_coordinate_vector::iterator it = coords.begin(); it != coords.end(); ++it)
-            newZ += ( it->first->point().z() * (it->second/result.second) );
+            newZ += ( it->first.z() * (it->second/result.second) );
 
     return newZ;
 }

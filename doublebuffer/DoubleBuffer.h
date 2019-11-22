@@ -72,7 +72,7 @@ private:
     const char* depthAttributeName;
     ContourMap inputContours;
     OGRSpatialReference * spatialReference;
-    OGRDataSource *poDstDS; //output datasource
+    GDALDataset *poDstDS; //output datasource
     geos::geom::PrecisionModel* precisionModel;
 };
 #endif

@@ -20,11 +20,11 @@
 cmake_minimum_required(VERSION 2.6)
 project(ContourUtilities)
 
+find_package(CGAL)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 find_package(GDAL)
 find_package(GEOS)
 find_package(PROJ4)
-find_package(CGAL)
 
 include(${CGAL_USE_FILE})
 include_directories("${CMAKE_SOURCE_DIR}/include" "${CMAKE_SOURCE_DIR}/CgalProcessor")
@@ -32,6 +32,8 @@ include_directories(${GDAL_INCLUDE_DIR})
 
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_FLAGS "-g -Wall")
+
+add_library(cgal_processor STATIC CgalProcessor/CgalProcessor.cpp)
 
 add_subdirectory(prefilter)
 add_subdirectory(gridfilter)

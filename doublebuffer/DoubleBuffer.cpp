@@ -20,14 +20,14 @@
 #include "DoubleBuffer.h"
 
 DoubleBuffer::DoubleBuffer(const char* inputFile, const char* outputFile, const char* depthAttributeName_):depthAttributeName(depthAttributeName_)  {
-    OGRRegisterAll();
+    GDALAllRegister();
     precisionModel = new geos::geom::PrecisionModel(10000);
     readShapefile(inputFile);
     prepareOutputShapefile(outputFile);
 }
 
 DoubleBuffer::~DoubleBuffer() {
-    OGRDataSource::DestroyDataSource( poDstDS );
+    GDALClose( poDstDS );
 }
 
 void DoubleBuffer::perform(simplificationMethod method, double tolerance) {
@@ -44,9 +44,9 @@ void DoubleBuffer::perform(simplificationMethod method, double tolerance) {
 
 void DoubleBuffer::readShapefile(const char* inputFile)
 {
-    OGRDataSource       *poDS;
+    GDALDataset       *poDS;
     
-    poDS = OGRSFDriverRegistrar::Open( inputFile, FALSE );
+    poDS = (GDALDataset*) GDALOpenEx( inputFile, GDAL_OF_VECTOR, NULL, NULL, NULL );
     if( poDS == NULL )
     {
         printf( "Open failed.\n" );
@@ -99,20 +99,20 @@ void DoubleBuffer::readShapefile(const char* inputFile)
         OGRFeature::DestroyFeature( poFeature );
     }
     
-    OGRDataSource::DestroyDataSource( poDS );  
+    GDALClose( poDS );  
 }
 
 void DoubleBuffer::prepareOutputShapefile(const char* outputFile) {
     const char *pszDriverName = "ESRI Shapefile";
-    OGRSFDriver *poDriver;
+    GDALDriver *poDriver;
     
-    poDriver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName(pszDriverName );
+    poDriver = GetGDALDriverManager()->GetDriverByName(pszDriverName );
     if( poDriver == NULL ) {
         printf( "%s driver not available.\n", pszDriverName );
         exit( 1 );
     }
     
-    poDstDS = poDriver->CreateDataSource( outputFile, NULL );
+    poDstDS = (GDALDataset*) GDALOpenEx( outputFile, GDAL_OF_VECTOR, NULL, NULL, NULL );
     if( poDstDS == NULL ) {
         printf( "Creation of output file failed.\n" );
         exit( 1 );
@@ -208,7 +208,7 @@ ContourMap DoubleBuffer::performDB(double bufferTolerance) {
     
     ContourMap contourOut, intermediateOut;
     
-    geos::geom::GeometryFactory geomFactory(precisionModel);
+    auto geomFactory = geos::geom::GeometryFactory::create(precisionModel);
     geos::operation::buffer::BufferParameters bufferParam;
     bufferParam.setSingleSided(true);
     geos::operation::buffer::BufferBuilder bufferBuild(bufferParam);
@@ -221,7 +221,7 @@ ContourMap DoubleBuffer::performDB(double bufferTolerance) {
             
             const geos::geom::Geometry* contourBufferUp;
             
-            const geos::geom::LineString* geomLinestring = geomFactory.createLineString(*jt);
+            const geos::geom::LineString* geomLinestring = geomFactory->createLineString(*jt);
             contourBufferUp = bufferBuild.bufferLineSingleSided(geomLinestring, bufferTolerance, true);
 
             if(!contourBufferUp->isEmpty()) {

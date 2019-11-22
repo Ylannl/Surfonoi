@@ -61,9 +61,9 @@ ifs(inputFile), cellSize(cellSize), projectFromWGS84(pfW), flipSignOnZ(fSOZ), fl
 bool Grid::readLine(double &x, double &y, double &z)
 {
     if (flipXY)
-        return ifs >> y >> x >> z;
+        return bool(ifs >> y >> x >> z);
     else
-        return ifs >> x >> y >> z;
+        return bool(ifs >> x >> y >> z);
 }
 
 void Grid::projectXY(double &x, double &y)

@@ -17,7 +17,7 @@
 #You should have received a copy of the GNU General Public License
 #along with Surfonoi.  If not, see <http://www.gnu.org/licenses/>.
 
-add_executable(nn2raster main.cpp "${CMAKE_SOURCE_DIR}/CgalProcessor/CgalProcessor.cpp")
-target_link_libraries(nn2raster ${GDAL_LIBRARY} ${GEOS_LIBRARY} ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES})
+add_executable(nn2raster main.cpp)
+target_link_libraries(nn2raster ${GDAL_LIBRARY} ${GEOS_LIBRARY} ${CGAL_LIBRARIES} ${CGAL_3RD_PARTY_LIBRARIES} cgal_processor)
 
 install (TARGETS nn2raster DESTINATION bin)

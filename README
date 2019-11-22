@@ -1,9 +1,9 @@
 DEPENDENCIES:
 tested versions are between brackets
-	- GDAL [1.10.0]
-	- CGAL [4.2]
-	- GEOS [3.3.3]
-	- PROJ4 [4.8.0]
+	- GDAL [2.4.1]
+	- CGAL [4.14,5.0]
+	- GEOS [3.7.1]
+	- PROJ4 [6.0.0]
 
 BUILDING:
 (after installing dependencies)
@@ -13,5 +13,4 @@ using cmake:
 	mkdir build
 	cd build
 	cmake ..
-	make
-	make install
+	make -j4 install
