@@ -192,8 +192,8 @@ void CgalProcessor::saveContourShp(std::vector<double> isoDepths, const char * f
             
             // fix orientation of contours to have the shallower region on the right side
             size_t index = (*sit)->getNumPoints()/2;
-            geos::geom::Point* p1_ = (*sit)->getPointN(index);
-            geos::geom::Point* p2_ = (*sit)->getPointN(index+1);
+            auto p1_ = (*sit)->getPointN(index);
+            auto p2_ = (*sit)->getPointN(index+1);
             PointDt p1(p1_->getX(), p1_->getY(), it->first);
             PointDt p2(p2_->getX(), p2_->getY(), it->first);
             PointDt p3;
@@ -218,8 +218,8 @@ void CgalProcessor::saveContourShp(std::vector<double> isoDepths, const char * f
             } else if ( !(((orientation == CGAL::NEGATIVE) and (p3.z() > it->first)) or 
                    ((orientation == CGAL::POSITIVE) and (p3.z() < it->first)) ) ) 
             {
-                geos::geom::Geometry* g = (*sit)->reverse();
-                geos_ls = dynamic_cast<geos::geom::LineString*>( g );
+                auto g = (*sit)->reverse();
+                geos_ls = dynamic_cast<geos::geom::LineString*>( g.get() );
             } else {
                 geos_ls = *sit;
             }

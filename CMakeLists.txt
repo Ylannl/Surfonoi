@@ -32,6 +32,7 @@ include_directories(${GDAL_INCLUDE_DIR})
 
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_FLAGS "-g -Wall")
+set(CMAKE_CXX_STANDARD 11)
 
 add_library(cgal_processor STATIC CgalProcessor/CgalProcessor.cpp)
 

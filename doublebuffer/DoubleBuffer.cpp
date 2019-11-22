@@ -229,11 +229,11 @@ ContourMap DoubleBuffer::performDB(double bufferTolerance) {
                     const geos::geom::LineString* geom = dynamic_cast<const geos::geom::LineString*>(contourBufferUp->getGeometryN(i));
                     std::cerr << geom->toString() << std::endl;
                     if(!geom->isEmpty()) {
-                        const geos::geom::Geometry* contourBufferUpDown = bufferBuild.bufferLineSingleSided(geom->reverse(), bufferTolerance, true);
-                        intermediateOut[it->first].push_back(geom->getCoordinates());
+                        const geos::geom::Geometry* contourBufferUpDown = bufferBuild.bufferLineSingleSided(geom->reverse().get(), bufferTolerance, true);
+                        intermediateOut[it->first].push_back(geom->getCoordinates().get());
                         for (size_t j = 0; j<contourBufferUpDown->getNumGeometries(); ++j) {
                             if ( !contourBufferUpDown->isEmpty() )
-                                contourOut[it->first].push_back(contourBufferUpDown->getGeometryN(j)->getCoordinates());
+                                contourOut[it->first].push_back(contourBufferUpDown->getGeometryN(j)->getCoordinates().get());
                         }
                     }
                 }

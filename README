@@ -1,16 +1,21 @@
-DEPENDENCIES:
+##Dependencies
 tested versions are between brackets
-	- GDAL [2.4.1]
-	- CGAL [4.14,5.0]
-	- GEOS [3.7.1]
-	- PROJ4 [6.0.0]
+	- GDAL [2.4.2]
+	- CGAL [4.14.1,5.0]
+	- GEOS [3.8.0]
+	- PROJ4 [6.2.1]
 
-BUILDING:
-(after installing dependencies)
+##Building:
+Install dependencies, eg. on macOS:
+```
+brew install gdal cgal geos proj
+```
 
-using cmake:
-	cd Surfonoi/
-	mkdir build
-	cd build
-	cmake ..
-	make -j4 install
+and build Surfonoi
+```
+cd Surfonoi/
+mkdir build
+cd build
+cmake ..
+make -j4 install
+```
