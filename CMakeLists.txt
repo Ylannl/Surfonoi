@@ -28,7 +28,7 @@ find_package(PROJ4)
 
 include(${CGAL_USE_FILE})
 include_directories("${CMAKE_SOURCE_DIR}/include" "${CMAKE_SOURCE_DIR}/CgalProcessor")
-include_directories(${GDAL_INCLUDE_DIR})
+include_directories(${GDAL_INCLUDE_DIR} ${GEOS_INCLUDE_DIR} ${PROJ4_INCLUDE_DIR})
 
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_FLAGS "-g -Wall")
